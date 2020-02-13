@@ -1,7 +1,11 @@
 package appLogger;
 
 /*
- * @version 1.0
+ * @version 2.0
+ * Established in a stand alone project
+ * This is set up as a sington class. Not to be used  alone
+ * Only one class that uses this should supply the StyledDocument
+ *   via setDoc(StyledDocument docLog). 
  */
 import java.awt.Color;
 import java.awt.Component;
@@ -33,7 +37,7 @@ import javax.swing.text.StyledDocument;
 
 public class AppLogger {
 
-	private StyledDocument docLog; // keep from failing if not set by using app
+	private StyledDocument docLog; // keep from failing if not set by a using Class
 	private JTextPane txtLog;
 	private JPopupMenu popupLog;
 	private AdapterLog logAdaper = new AdapterLog();
@@ -55,7 +59,7 @@ public class AppLogger {
 
 	public void setTextPane(JTextPane textPane) {
 		setTextPane(textPane, "Application Log");
-	}//
+	}// setTextPane
 
 	public void setTextPane(JTextPane textPane, String header) {
 		this.txtLog = textPane;
@@ -101,7 +105,6 @@ public class AppLogger {
 		});
 	}// addPopup
 	/*------------------------------------*/
-	/*------------------------------------*/
 
 	private void doLogClear() {
 		this.clear();
@@ -110,12 +113,10 @@ public class AppLogger {
 	private void doLogPrint() {
 		Font originalFont = txtLog.getFont();
 		try {
-			// textPane.setFont(new Font("Courier New", Font.PLAIN, 8));
 			txtLog.setFont(originalFont.deriveFont(8.0f));
 			MessageFormat headerMessage = new MessageFormat(header);
 			MessageFormat footerMessage = new MessageFormat(new Date().toString() + "           Page - {0}");
 			txtLog.print(headerMessage, footerMessage);
-			// textPane.setFont(new Font("Courier New", Font.PLAIN, 14));
 			txtLog.setFont(originalFont);
 		} catch (PrinterException e) {
 			txtLog.setFont(originalFont);
@@ -134,7 +135,6 @@ public class AppLogger {
 		try {
 			docLog.remove(0, docLog.getLength());
 		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} // try
 	}// clear
@@ -162,11 +162,6 @@ public class AppLogger {
 		insertListing(sb.toString(), attr);
 	}// addMeta
 
-	@Deprecated
-	public void addInfo(String... message) {
-		addMeta(attrBlack, message);
-	}// addInfo
-
 	public void info(String... message) {
 		addMeta(attrBlack, message);
 	}// info
@@ -179,11 +174,6 @@ public class AppLogger {
 		insertListing(doFormat(format, args), attrBlack);
 	}// info
 
-	@Deprecated
-	public void addWarning(String... message) {
-		addMeta(attrBlue, message);
-	}// addWarning
-
 	public void warn(String... message) {
 		addMeta(attrBlue, message);
 	}// warn
@@ -192,11 +182,6 @@ public class AppLogger {
 		insertListing(doFormat(format, args), attrBlue);
 	}// warn
 	
-	@Deprecated
-	public void addError(String... message) {
-		addMeta(attrRed, message);
-	}// addError
-
 	public void error(String... message) {
 		addMeta(attrRed, message);
 	}// error
@@ -204,11 +189,6 @@ public class AppLogger {
 	public void errorf(String format, Object... args) {
 		insertListing(doFormat(format, args), attrRed);
 	}// error
-
-	@Deprecated
-	public void addSpecial(String... message) {
-		addMeta(attrTeal, message);
-	}// addSpecial
 
 	public void special(String... message) {
 		addMeta(attrTeal, message);
@@ -223,44 +203,34 @@ public class AppLogger {
 		String ans = formatter.format(format, args).toString();
 		formatter.close();
 		return ans;
-
-		// return new Formatter().format(format,args).toString();
 	}// doFormat
 
 	// ----------Time-------------------------------
 
 	public Date addTimeStamp() {
 		Date now = new Date();
-		addMeta(attrSilver, now.toString());
+		addMeta(attrMaroon, now.toString());
 		return now;
-	}//
-
-	// public void addTimeStamp() {
-	// addMeta(attrSilver, LocalDateTime.now().toString());
-	// }// addTimeStamp
+	}//addTimeStamp
 
 	public Date addTimeStamp(String message) {
 		Date now = new Date();
-		insertListing(message + " " + now.toString() + System.lineSeparator(), attrSilver);
+		insertListing(message + " " + now.toString() + System.lineSeparator(), attrMaroon);
 		return now;
 	}// addTimeStamp
-
-	// public void addTimeStamp(String message) {
-	// insertListing(message + " " + LocalDateTime.now().toString() + System.lineSeparator(), attrSilver);
-	// }// addTimeStamp
 
 	public Date addElapsedTime(Date startTime) {
 		Date endTime = new Date();
 		String message = getElapsedTimeToString(startTime, endTime);
-		insertListing(message + " " + endTime.toString() + System.lineSeparator(), attrSilver);
+		insertListing(message + " " + endTime.toString() + System.lineSeparator(), attrMaroon);
 		return endTime;
 	}// addElapsedTime
 
 	public Date addElapsedTime(Date startTime, String message) {
 		Date endTime = new Date();
-		insertListing(message + " " + endTime.toString() + System.lineSeparator(), attrSilver);
+		insertListing(message + " " + endTime.toString() + System.lineSeparator(), attrMaroon);
 		String elapsedTime = getElapsedTimeToString(startTime, endTime);
-		insertListing(elapsedTime + System.lineSeparator(), attrSilver);
+		insertListing(elapsedTime + System.lineSeparator(), attrMaroon);
 		return endTime;
 	}// addElapsedTime
 
@@ -319,7 +289,6 @@ public class AppLogger {
 		StyleConstants.setForeground(attrGreen, new Color(0, 128, 0));
 		StyleConstants.setForeground(attrTeal, new Color(0, 128, 128));
 		StyleConstants.setForeground(attrGray, new Color(128, 128, 128));
-		StyleConstants.setForeground(attrSilver, new Color(192, 192, 192));
 		StyleConstants.setForeground(attrRed, new Color(255, 0, 0));
 		StyleConstants.setForeground(attrMaroon, new Color(128, 0, 0));
 	}// setAttributes
@@ -329,17 +298,17 @@ public class AppLogger {
 	private SimpleAttributeSet attrGray = new SimpleAttributeSet();
 	private SimpleAttributeSet attrGreen = new SimpleAttributeSet();
 	private SimpleAttributeSet attrRed = new SimpleAttributeSet();
-	private SimpleAttributeSet attrSilver = new SimpleAttributeSet();
 	private SimpleAttributeSet attrNavy = new SimpleAttributeSet();
 	private SimpleAttributeSet attrMaroon = new SimpleAttributeSet();
 	private SimpleAttributeSet attrTeal = new SimpleAttributeSet();
 
-	public static final Integer INFO = 0;
-	public static final Integer WARNING = 1;
-	public static final Integer ERROR = 2;
-	public static final Integer SPECIAL = 4;
+	public static final Integer INFO = 0;		// Black
+	public static final Integer WARNING = 1;	// Blue
+	public static final Integer ERROR = 2;		// Red
+	public static final Integer SPECIAL = 4;	// Teal
+	public static final Integer TIME = 5;		// Maroon
+	
 
-	// private static final String EMPTY_STRING = "";
 	private static final String NL = System.lineSeparator();
 
 	/*------------------------------------*/
