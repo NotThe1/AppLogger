@@ -6,7 +6,8 @@ package appLogger;
  * Established in a stand alone project
  * This is set up as a sington class. Not to be used alone
  * Only one class that uses this should supply the StyledDocument
- *   via setDoc(StyledDocument docLog). 
+ *   via setDoc(StyledDocument docLog). Te setText pane should also be
+ *   called by the same class ( to enable popUp menu). 
  */
 import java.awt.Color;
 import java.awt.Component;
