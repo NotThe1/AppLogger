@@ -1,12 +1,16 @@
 package appLogger;
 
 /*
- * @version 2.0
+ * @version 2.1
  * 
+ * 2020-02-21 - Added Color argument for method:
+ *    infof(Color color,String format, Object... args)
+ *    
+ *    
  * Established in a stand alone project
  * This is set up as a sington class. Not to be used alone
  * Only one class that uses this should supply the StyledDocument
- *   via setDoc(StyledDocument docLog). Te setText pane should also be
+ *   via setDoc(StyledDocument docLog). The setText pane should also be
  *   called by the same class ( to enable popUp menu). 
  */
 import java.awt.Color;
@@ -168,9 +172,10 @@ public class AppLogger {
 		addMeta(attrBlack, message);
 	}// info
 
-	public void info(String format, Object... args) {
-		insertListing(doFormat(format, args), attrBlack);
-	}// info
+	public void infof(Color color,String format, Object... args) {
+		StyleConstants.setForeground(attrCustom, color);
+		insertListing(doFormat(format, args), attrCustom);
+	}// infof
 
 	public void infof(String format, Object... args) {
 		insertListing(doFormat(format, args), attrBlack);
@@ -282,7 +287,7 @@ public class AppLogger {
 			e.printStackTrace();
 		} // try
 	}// insertSource
-
+	
 	// ----------------------------------------------------------------------
 	private void setAttributes() {
 		StyleConstants.setForeground(attrNavy, new Color(0, 0, 128));
@@ -295,6 +300,7 @@ public class AppLogger {
 		StyleConstants.setForeground(attrMaroon, new Color(128, 0, 0));
 	}// setAttributes
 
+	private SimpleAttributeSet attrCustom = new SimpleAttributeSet();
 	private SimpleAttributeSet attrBlack = new SimpleAttributeSet();
 	private SimpleAttributeSet attrBlue = new SimpleAttributeSet();
 	private SimpleAttributeSet attrGray = new SimpleAttributeSet();
