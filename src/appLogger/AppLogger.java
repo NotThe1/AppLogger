@@ -2,8 +2,9 @@ package appLogger;
 
 /*
  * @version 2.0
+ * 
  * Established in a stand alone project
- * This is set up as a sington class. Not to be used  alone
+ * This is set up as a sington class. Not to be used alone
  * Only one class that uses this should supply the StyledDocument
  *   via setDoc(StyledDocument docLog). 
  */
