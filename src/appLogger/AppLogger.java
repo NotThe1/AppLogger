@@ -3,6 +3,8 @@ package appLogger;
 /*
  * @version 2.1
  * 
+ * 2020-02-28 - Established as a Jar 
+ * 
  * 2020-02-21 - Added Color argument for method:
  *    infof(Color color,String format, Object... args)
  *    
