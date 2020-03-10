@@ -3,6 +3,11 @@ package appLogger;
 /*
  * @version 2.1
  * 
+ * 2020-03-10 - changed method  name:
+ * from:  infof(Color color,String format, Object... args)
+ * to  :  post(Color color,String format, Object... args)
+ * 
+ * 
  * 2020-02-28 - Established as a Jar 
  * 
  * 2020-02-21 - Added Color argument for method:
@@ -50,6 +55,11 @@ public class AppLogger {
 	private JPopupMenu popupLog;
 	private AdapterLog logAdaper = new AdapterLog();
 	private String header;
+	
+	private int countError;
+	private int countWarning;
+	private int countInfo;
+	private int countSpecial;
 
 	private static AppLogger instance = new AppLogger();
 
@@ -138,7 +148,29 @@ public class AppLogger {
 	private static final String PUM_LOG_CLEAR = "popupLogClear";
 
 	// ---------------------------------------------------------------------
+	
+	public void resetCounts() {
+		countError = 0;
+		countWarning = 0;
+		countInfo = 0;
+		countSpecial = 0;
+	}//resetCounts
+	
+	public int getErrorCount(){
+		return countError;
+	}//getErrorCount
 
+	public int getWarningCount(){
+		return countWarning;
+	}//getWarningCount
+
+	public int getInfoCount(){
+		return countInfo;
+	}//getInfoCount
+
+	public int getSpecialCount(){
+		return countSpecial;
+	}//getSpecialCount
 	public void clear() {
 		try {
 			docLog.remove(0, docLog.getLength());
@@ -174,22 +206,42 @@ public class AppLogger {
 		addMeta(attrBlack, message);
 	}// info
 
-	public void infof(Color color,String format, Object... args) {
-		StyleConstants.setForeground(attrCustom, color);
-		insertListing(doFormat(format, args), attrCustom);
-	}// infof
-
 	public void infof(String format, Object... args) {
 		insertListing(doFormat(format, args), attrBlack);
-	}// info
+	}// infof
 
+	public void infoCount(String... message) {
+		countInfo++;
+		info( message);
+	}// infoCount
+
+	public void infofCount(String format, Object... args) {
+		countInfo++;
+		infof(format, args);
+	}// infofCount
+
+	public void post(Color color,String format, Object... args) {
+		StyleConstants.setForeground(attrCustom, color);
+		insertListing(doFormat(format, args), attrCustom);
+	}// post
+	
 	public void warn(String... message) {
 		addMeta(attrBlue, message);
 	}// warn
 
 	public void warnf(String format, Object... args) {
 		insertListing(doFormat(format, args), attrBlue);
-	}// warn
+	}// warnf
+	
+	public void warnCount(String... message) {
+		countWarning++;
+		warn( message);
+	}// warnCount
+
+	public void warnfCount(String format, Object... args) {
+		countWarning++;
+		warnf(format, args);
+	}// warnfCount
 	
 	public void error(String... message) {
 		addMeta(attrRed, message);
@@ -198,6 +250,16 @@ public class AppLogger {
 	public void errorf(String format, Object... args) {
 		insertListing(doFormat(format, args), attrRed);
 	}// error
+	
+	public void errorCount(String... message) {
+		countError++;
+		error(message);
+	}// errorCount
+
+	public void errorfCount(String format, Object... args) {
+		countError++;
+		errorf(format, args);
+	}// errorfCount
 
 	public void special(String... message) {
 		addMeta(attrTeal, message);
@@ -205,7 +267,17 @@ public class AppLogger {
 
 	public void specialf(String format, Object... args) {
 		insertListing(doFormat(format, args), attrTeal);
-	}// special
+	}// specialf
+
+	public void specialCount(String... message) {
+		countSpecial++;
+		special( message);
+	}// specialCount
+
+	public void specialfCount(String format, Object... args) {
+		countSpecial++;
+		specialf(format, args);
+	}// specialfCount
 
 	private String doFormat(String format, Object... args) {
 		Formatter formatter = new Formatter();
@@ -228,24 +300,26 @@ public class AppLogger {
 		return now;
 	}// addTimeStamp
 
-	public Date addElapsedTime(Date startTime) {
+	public Date getElapsedTime(Date startTime) {
 		Date endTime = new Date();
-		String message = getElapsedTimeToString(startTime, endTime);
-		insertListing(message + " " + endTime.toString() + System.lineSeparator(), attrMaroon);
+		String message = measureElapsedTimeToString(startTime, endTime);
+		String display = String.format("   End     time : %s%n   Start    time : %s%nElapsed time : %s%n%n", endTime.toString(),startTime.toString(),message);
+		insertListing(display, attrMaroon);
+		//insertListing(message + " " + endTime.toString() + System.lineSeparator(), attrMaroon);
 		return endTime;
 	}// addElapsedTime
 
-	public Date addElapsedTime(Date startTime, String message) {
-		Date endTime = new Date();
-		insertListing(message + " " + endTime.toString() + System.lineSeparator(), attrMaroon);
-		String elapsedTime = getElapsedTimeToString(startTime, endTime);
-		insertListing(elapsedTime + System.lineSeparator(), attrMaroon);
-		return endTime;
-	}// addElapsedTime
+//	public Date getElapsedTime(Date startTime, String message) {
+//		Date endTime = new Date();
+//		insertListing(message + " " + endTime.toString() + System.lineSeparator(), attrMaroon);
+//		String elapsedTime = measureElapsedTimeToString(startTime, endTime);
+//		insertListing(elapsedTime + System.lineSeparator(), attrMaroon);
+//		return endTime;
+//	}// addElapsedTime
 
-	private static String getElapsedTimeToString(Date startDate, Date endDate) {
+	private static String measureElapsedTimeToString(Date startDate, Date endDate) {
 		String result = "";
-		Map<TimeUnit, Long> times = getElapsedTime(startDate, endDate);
+		Map<TimeUnit, Long> times = measureElapsedTime(startDate, endDate);
 		List<TimeUnit> timeUnits = new ArrayList<TimeUnit>(EnumSet.allOf(TimeUnit.class));
 		long duration;
 		boolean nonZeroFlag = false;
@@ -265,7 +339,7 @@ public class AppLogger {
 		return result;
 	}// getElapsedTimeToString
 
-	public static Map<TimeUnit, Long> getElapsedTime(Date startDate, Date endDate) {
+	private static Map<TimeUnit, Long> measureElapsedTime(Date startDate, Date endDate) {
 		Map<TimeUnit, Long> result = new HashMap<TimeUnit, Long>();
 		long diffInMilliseconds = endDate.getTime() - startDate.getTime();
 		List<TimeUnit> timeUnits = new ArrayList<TimeUnit>(EnumSet.allOf(TimeUnit.class));
